@@ -26,3 +26,7 @@ HealerAlerts is a lightweight, purpose-built addon for World of Warcraft: Wrath 
 - Optional setting to suppress announcements unless grouped
 
 This ensures alerts are always delivered to the players who need them most, without manual switching or setup, making HealerAlerts ideal for both five-man content and raids.
+
+## Installation
+
+Simply download the `HealerAlerts` folder, and move it into your `Interface\AddOns` directory. The addon will become available in your addons selection, and should be enabled by default.
