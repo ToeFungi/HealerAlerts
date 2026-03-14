@@ -13,7 +13,7 @@ When your mana gets low, your health drops, or you die, the addon sends a messag
 | Low on mana | `[HealerAlerts] PlayerName is Low on Mana! (28%)` |
 | Out of mana | `[HealerAlerts] PlayerName is Out of Mana! (8%)` |
 | Low on health | `[HealerAlerts] PlayerName is Low on Health! (22%)` |
-| Healer death | `[HealerAlerts] Healer PlayerName has died!` |
+| Healer death | `[HealerAlerts] Healer PlayerName has died!` *(toggleable)* |
 | Healer has aggro | `[HealerAlerts] PlayerName has aggro!` |
 
 ---
@@ -40,6 +40,11 @@ All settings are available in-game via **Interface Options → HealerAlerts**, o
 **Default: Off**
 
 When enabled, HealerAlerts will stay silent if you are not in a party, raid, or battleground. Useful if you don't want yell announcements while questing or farming solo.
+
+### Announce on Death
+**Default: On**
+
+When enabled, the addon announces to the group when you die. Turn this off if you prefer to keep your death silent — for example, in a battleground where you don't want to give information to the enemy.
 
 ### Announce in Battleground
 **Default: On**
@@ -98,6 +103,7 @@ Toggle individual alerts or adjust thresholds directly from chat:
 | `/ha oom` | Toggle the Out of Mana alert on/off |
 | `/ha lowhealth` | Toggle the Low Health alert on/off |
 | `/ha battleground` | Toggle Battleground announcements on/off |
+| `/ha death` | Toggle death announcement on/off |
 | `/ha setmana 25` | Set the Low Mana threshold to 25% |
 | `/ha setoom 5` | Set the Out of Mana threshold to 5% |
 | `/ha sethealth 20` | Set the Low Health threshold to 20% |
