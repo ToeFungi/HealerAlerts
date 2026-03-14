@@ -2,7 +2,7 @@
 ## Title: HealerAlerts
 ## Notes: Alerts for healers in WotLK. Announces low mana, out of mana, low health, and death automatically. Configurable thresholds and cooldowns. Slash command /hca included to open UI.
 ## Author: Alex
-## Version: 1.0.1
+## Version: 1.1.0
 ## SavedVariables: HealerAlertsDB
 
 HealerAlerts.lua

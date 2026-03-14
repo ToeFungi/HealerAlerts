@@ -27,7 +27,8 @@ local defaults = {
         threshold = 30,
         fired = false,
     },
-    onlyAnnounceWhenInGroup = false
+    onlyAnnounceWhenInGroup = false,
+    announceInBattleground = true,
 }
 
 -- =========================
@@ -48,7 +49,14 @@ local function CopyDefaults(src, dst)
 end
 
 local function GetChatChannel()
-    if GetNumRaidMembers() > 0 then
+    local inInstance, instanceType = IsInInstance()
+    if inInstance and instanceType == "pvp" then
+        if HealerAlertsDB.announceInBattleground then
+            return "BATTLEGROUND"
+        else
+            return nil
+        end
+    elseif GetNumRaidMembers() > 0 then
         return "RAID"
     elseif GetNumPartyMembers() > 0 then
         return "PARTY"
@@ -199,6 +207,10 @@ SlashCmdList["HEALERALERTS"] = function(msg)
         HealerAlertsDB.lowHealth.enabled = not HealerAlertsDB.lowHealth.enabled
         print("Low health alerts:", HealerAlertsDB.lowHealth.enabled and "ON" or "OFF")
 
+    elseif cmd == "battleground" then
+        HealerAlertsDB.announceInBattleground = not HealerAlertsDB.announceInBattleground
+        print("Battleground announcements:", HealerAlertsDB.announceInBattleground and "ON" or "OFF")
+
     elseif cmd == "setmana" then
         local n = tonumber(value)
         if n then
@@ -225,6 +237,7 @@ SlashCmdList["HEALERALERTS"] = function(msg)
         print("/ha lowmana      - Toggle low mana alert")
         print("/ha oom          - Toggle out of mana alert")
         print("/ha lowhealth    - Toggle low health alert")
+        print("/ha battleground - Toggle battleground announcements")
         print("/ha setmana X    - Set low mana threshold")
         print("/ha setoom X     - Set out of mana threshold")
         print("/ha sethealth X  - Set low health threshold")
@@ -241,7 +254,7 @@ panel.name = "HealerAlerts"
 
 -- Content frame inside scroll frame
 local content = CreateFrame("Frame", nil, panel)
-content:SetSize(1, 600) -- adjust height if you add more controls
+content:SetSize(1, 640) -- adjust height if you add more controls
 panel:SetScrollChild(content)
 
 -- Title
@@ -320,12 +333,22 @@ CreateCheckbox(
     function(v) HealerAlertsDB.onlyAnnounceWhenInGroup = v end
 )
 
+-- Battleground Announce
+CreateCheckbox(
+    "HCA_BattlegroundAnnounce",
+    "Announce in Battleground",
+    "Announces alerts to Battleground chat when in a PvP instance.",
+    20, -100,
+    function() return HealerAlertsDB.announceInBattleground end,
+    function(v) HealerAlertsDB.announceInBattleground = v end
+)
+
 -- Low Mana
 CreateCheckbox(
     "HCA_LowMana",
     "Enable Low Mana Alert",
     "Announces when mana drops below the configured threshold.",
-    20, -100,
+    20, -140,
     function() return HealerAlertsDB.lowMana.enabled end,
     function(v) HealerAlertsDB.lowMana.enabled = v end
 )
@@ -335,7 +358,7 @@ CreateSlider(
     "Low Mana Threshold",
     "Mana percentage that triggers the alert.",
     1, 100, 1,
-    40, -160,
+    40, -200,
     "%",
     function() return HealerAlertsDB.lowMana.threshold end,
     function(v) HealerAlertsDB.lowMana.threshold = v end
@@ -346,7 +369,7 @@ CreateCheckbox(
     "HCA_OOM",
     "Enable Out of Mana Alert",
     "Announces when mana drops critically low.",
-    20, -200,
+    20, -240,
     function() return HealerAlertsDB.outOfMana.enabled end,
     function(v) HealerAlertsDB.outOfMana.enabled = v end
 )
@@ -356,7 +379,7 @@ CreateSlider(
     "Out of Mana Threshold",
     "Critical mana percentage.",
     1, 100, 1,
-    40, -260,
+    40, -300,
     "%",
     function() return HealerAlertsDB.outOfMana.threshold end,
     function(v) HealerAlertsDB.outOfMana.threshold = v end
@@ -367,7 +390,7 @@ CreateCheckbox(
     "HCA_LowHealth",
     "Enable Low Health Alert",
     "Announces when health is critically low.",
-    20, -300,
+    20, -340,
     function() return HealerAlertsDB.lowHealth.enabled end,
     function(v) HealerAlertsDB.lowHealth.enabled = v end
 )
@@ -377,7 +400,7 @@ CreateSlider(
     "Low Health Threshold",
     "Health percentage that triggers the alert.",
     1, 100, 1,
-    40, -360,
+    40, -400,
     "%",
     function() return HealerAlertsDB.lowHealth.threshold end,
     function(v) HealerAlertsDB.lowHealth.threshold = v end
@@ -389,7 +412,7 @@ CreateSlider(
     "Announcement Cooldown",
     "Minimum time between announcements (seconds).",
     5, 120, 5,
-    40, -420,
+    40, -460,
     " seconds",
     function() return ANNOUNCE_COOLDOWN end,
     function(v) ANNOUNCE_COOLDOWN = v end
