@@ -29,6 +29,7 @@ local defaults = {
     },
     onlyAnnounceWhenInGroup = false,
     announceInBattleground = true,
+    announceOnDeath = true,
 }
 
 -- =========================
@@ -151,7 +152,9 @@ HCA:SetScript("OnEvent", function(self, event, arg1)
     end
 
     if event == "PLAYER_DEAD" then
-        Announce("Healer " .. playerName .. " has died!")
+        if HealerAlertsDB.announceOnDeath then
+            Announce("Healer " .. playerName .. " has died!")
+        end
     end
 
     if event == "PLAYER_ALIVE" or event == "PLAYER_UNGHOST" then
@@ -211,6 +214,10 @@ SlashCmdList["HEALERALERTS"] = function(msg)
         HealerAlertsDB.announceInBattleground = not HealerAlertsDB.announceInBattleground
         print("Battleground announcements:", HealerAlertsDB.announceInBattleground and "ON" or "OFF")
 
+    elseif cmd == "death" then
+        HealerAlertsDB.announceOnDeath = not HealerAlertsDB.announceOnDeath
+        print("Death announcements:", HealerAlertsDB.announceOnDeath and "ON" or "OFF")
+
     elseif cmd == "setmana" then
         local n = tonumber(value)
         if n then
@@ -238,6 +245,7 @@ SlashCmdList["HEALERALERTS"] = function(msg)
         print("/ha oom          - Toggle out of mana alert")
         print("/ha lowhealth    - Toggle low health alert")
         print("/ha battleground - Toggle battleground announcements")
+        print("/ha death        - Toggle death announcement")
         print("/ha setmana X    - Set low mana threshold")
         print("/ha setoom X     - Set out of mana threshold")
         print("/ha sethealth X  - Set low health threshold")
@@ -254,7 +262,7 @@ panel.name = "HealerAlerts"
 
 -- Content frame inside scroll frame
 local content = CreateFrame("Frame", nil, panel)
-content:SetSize(1, 640) -- adjust height if you add more controls
+content:SetSize(1, 680) -- adjust height if you add more controls
 panel:SetScrollChild(content)
 
 -- Title
@@ -343,12 +351,22 @@ CreateCheckbox(
     function(v) HealerAlertsDB.announceInBattleground = v end
 )
 
+-- Death Announce
+CreateCheckbox(
+    "HCA_AnnounceOnDeath",
+    "Announce on Death",
+    "Announces to the group when the healer dies.",
+    20, -140,
+    function() return HealerAlertsDB.announceOnDeath end,
+    function(v) HealerAlertsDB.announceOnDeath = v end
+)
+
 -- Low Mana
 CreateCheckbox(
     "HCA_LowMana",
     "Enable Low Mana Alert",
     "Announces when mana drops below the configured threshold.",
-    20, -140,
+    20, -180,
     function() return HealerAlertsDB.lowMana.enabled end,
     function(v) HealerAlertsDB.lowMana.enabled = v end
 )
@@ -358,7 +376,7 @@ CreateSlider(
     "Low Mana Threshold",
     "Mana percentage that triggers the alert.",
     1, 100, 1,
-    40, -200,
+    40, -240,
     "%",
     function() return HealerAlertsDB.lowMana.threshold end,
     function(v) HealerAlertsDB.lowMana.threshold = v end
@@ -369,7 +387,7 @@ CreateCheckbox(
     "HCA_OOM",
     "Enable Out of Mana Alert",
     "Announces when mana drops critically low.",
-    20, -240,
+    20, -280,
     function() return HealerAlertsDB.outOfMana.enabled end,
     function(v) HealerAlertsDB.outOfMana.enabled = v end
 )
@@ -379,7 +397,7 @@ CreateSlider(
     "Out of Mana Threshold",
     "Critical mana percentage.",
     1, 100, 1,
-    40, -300,
+    40, -340,
     "%",
     function() return HealerAlertsDB.outOfMana.threshold end,
     function(v) HealerAlertsDB.outOfMana.threshold = v end
@@ -390,7 +408,7 @@ CreateCheckbox(
     "HCA_LowHealth",
     "Enable Low Health Alert",
     "Announces when health is critically low.",
-    20, -340,
+    20, -380,
     function() return HealerAlertsDB.lowHealth.enabled end,
     function(v) HealerAlertsDB.lowHealth.enabled = v end
 )
@@ -400,7 +418,7 @@ CreateSlider(
     "Low Health Threshold",
     "Health percentage that triggers the alert.",
     1, 100, 1,
-    40, -400,
+    40, -440,
     "%",
     function() return HealerAlertsDB.lowHealth.threshold end,
     function(v) HealerAlertsDB.lowHealth.threshold = v end
@@ -412,7 +430,7 @@ CreateSlider(
     "Announcement Cooldown",
     "Minimum time between announcements (seconds).",
     5, 120, 5,
-    40, -460,
+    40, -500,
     " seconds",
     function() return ANNOUNCE_COOLDOWN end,
     function(v) ANNOUNCE_COOLDOWN = v end
