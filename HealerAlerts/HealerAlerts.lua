@@ -39,7 +39,6 @@ local defaults = {
     announceInBattleground = true,
     announceOnDeath = true,
     enabled = true,
-    onlyWhenHealerSpec = true,
 }
 
 -- =========================
@@ -103,7 +102,7 @@ end
 
 local function Announce(msg)
     if not HealerAlertsDB.enabled then return end
-    if HealerAlertsDB.onlyWhenHealerSpec and not cachedIsHealerSpec then return end
+    if not cachedIsHealerSpec then return end
 
     local now = GetTime()
 
@@ -244,10 +243,6 @@ SlashCmdList["HEALERALERTS"] = function(msg)
         HealerAlertsDB.enabled = not HealerAlertsDB.enabled
         print("HealerAlerts:", HealerAlertsDB.enabled and "ON" or "OFF")
 
-    elseif cmd == "healerspec" then
-        HealerAlertsDB.onlyWhenHealerSpec = not HealerAlertsDB.onlyWhenHealerSpec
-        print("Healer spec only:", HealerAlertsDB.onlyWhenHealerSpec and "ON" or "OFF")
-
     elseif cmd == "lowmana" then
         HealerAlertsDB.lowMana.enabled = not HealerAlertsDB.lowMana.enabled
         print("Low mana alerts:", HealerAlertsDB.lowMana.enabled and "ON" or "OFF")
@@ -292,7 +287,6 @@ SlashCmdList["HEALERALERTS"] = function(msg)
     else
         print("HealerAlerts commands:")
         print("/ha toggle       - Enable/disable all announcements")
-        print("/ha healerspec   - Toggle healer spec only mode")
         print("/ha lowmana      - Toggle low mana alert")
         print("/ha oom          - Toggle out of mana alert")
         print("/ha lowhealth    - Toggle low health alert")
@@ -314,7 +308,7 @@ panel.name = "HealerAlerts"
 
 -- Content frame inside scroll frame
 local content = CreateFrame("Frame", nil, panel)
-content:SetSize(1, 760) -- adjust height if you add more controls
+content:SetSize(1, 720) -- adjust height if you add more controls
 panel:SetScrollChild(content)
 
 -- Title
@@ -409,23 +403,12 @@ masterToggle:HookScript("OnShow", function()
     end
 end)
 
--- Healer Spec Only
-local healerSpecCb = CreateCheckbox(
-    "HCA_OnlyWhenHealerSpec",
-    "Only Announce when Healer Spec",
-    "Suppresses all announcements when your primary talent tree is not a healing spec.",
-    20, -100,
-    function() return HealerAlertsDB.onlyWhenHealerSpec end,
-    function(v) HealerAlertsDB.onlyWhenHealerSpec = v end
-)
-table.insert(dependentControls, healerSpecCb)
-
 -- Only Announce when in Group
 local cb = CreateCheckbox(
     "HCA_OnlyAnnounceWhenInGroup",
     "Only Announce when in Group",
     "Will only make announcements when in a group",
-    20, -140,
+    20, -100,
     function() return HealerAlertsDB.onlyAnnounceWhenInGroup end,
     function(v) HealerAlertsDB.onlyAnnounceWhenInGroup = v end
 )
@@ -436,7 +419,7 @@ cb = CreateCheckbox(
     "HCA_BattlegroundAnnounce",
     "Announce in Battleground",
     "Announces alerts to Battleground chat when in a PvP instance.",
-    20, -180,
+    20, -140,
     function() return HealerAlertsDB.announceInBattleground end,
     function(v) HealerAlertsDB.announceInBattleground = v end
 )
@@ -447,7 +430,7 @@ cb = CreateCheckbox(
     "HCA_AnnounceOnDeath",
     "Announce on Death",
     "Announces to the group when the healer dies.",
-    20, -220,
+    20, -180,
     function() return HealerAlertsDB.announceOnDeath end,
     function(v) HealerAlertsDB.announceOnDeath = v end
 )
@@ -458,7 +441,7 @@ cb = CreateCheckbox(
     "HCA_LowMana",
     "Enable Low Mana Alert",
     "Announces when mana drops below the configured threshold.",
-    20, -260,
+    20, -220,
     function() return HealerAlertsDB.lowMana.enabled end,
     function(v) HealerAlertsDB.lowMana.enabled = v end
 )
@@ -469,7 +452,7 @@ local s = CreateSlider(
     "Low Mana Threshold",
     "Mana percentage that triggers the alert.",
     1, 100, 1,
-    40, -320,
+    40, -280,
     "%",
     function() return HealerAlertsDB.lowMana.threshold end,
     function(v) HealerAlertsDB.lowMana.threshold = v end
@@ -481,7 +464,7 @@ cb = CreateCheckbox(
     "HCA_OOM",
     "Enable Out of Mana Alert",
     "Announces when mana drops critically low.",
-    20, -360,
+    20, -320,
     function() return HealerAlertsDB.outOfMana.enabled end,
     function(v) HealerAlertsDB.outOfMana.enabled = v end
 )
@@ -492,7 +475,7 @@ s = CreateSlider(
     "Out of Mana Threshold",
     "Critical mana percentage.",
     1, 100, 1,
-    40, -420,
+    40, -380,
     "%",
     function() return HealerAlertsDB.outOfMana.threshold end,
     function(v) HealerAlertsDB.outOfMana.threshold = v end
@@ -504,7 +487,7 @@ cb = CreateCheckbox(
     "HCA_LowHealth",
     "Enable Low Health Alert",
     "Announces when health is critically low.",
-    20, -460,
+    20, -420,
     function() return HealerAlertsDB.lowHealth.enabled end,
     function(v) HealerAlertsDB.lowHealth.enabled = v end
 )
@@ -515,7 +498,7 @@ s = CreateSlider(
     "Low Health Threshold",
     "Health percentage that triggers the alert.",
     1, 100, 1,
-    40, -520,
+    40, -480,
     "%",
     function() return HealerAlertsDB.lowHealth.threshold end,
     function(v) HealerAlertsDB.lowHealth.threshold = v end
@@ -528,7 +511,7 @@ s = CreateSlider(
     "Announcement Cooldown",
     "Minimum time between announcements (seconds).",
     5, 120, 5,
-    40, -580,
+    40, -540,
     " seconds",
     function() return ANNOUNCE_COOLDOWN end,
     function(v) ANNOUNCE_COOLDOWN = v end
