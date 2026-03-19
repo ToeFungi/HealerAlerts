@@ -41,10 +41,7 @@ All settings are available in-game via **Interface Options → HealerAlerts**, o
 
 Master on/off switch. When unchecked, all announcements are silenced instantly and all other controls in the options panel are grayed out. Useful for quickly muting the addon without changing any individual settings.
 
-### Only Announce when Healer Spec
-**Default: On**
-
-When enabled, all announcements are suppressed if your primary talent tree is not a recognised healing spec (Holy/Discipline for Priests, Restoration for Druids and Shamans, Holy for Paladins). Non-healer classes (Mages, Warriors, etc.) are unaffected and always announce. The spec is re-evaluated automatically whenever you change talents.
+> **Healer spec enforcement:** Announcements are always suppressed when your primary talent tree is not a recognised healing spec (Holy/Discipline for Priests, Restoration for Druids and Shamans, Holy for Paladins). Non-healer classes (Warriors, Rogues, etc.) are unaffected. The spec is re-evaluated automatically whenever you change talents.
 
 ### Only Announce when in Group
 **Default: Off**
@@ -110,7 +107,6 @@ Toggle individual alerts or adjust thresholds directly from chat:
 | Command | What it does |
 |---|---|
 | `/ha toggle` | Enable/disable all announcements |
-| `/ha healerspec` | Toggle healer spec only mode on/off |
 | `/ha lowmana` | Toggle the Low Mana alert on/off |
 | `/ha oom` | Toggle the Out of Mana alert on/off |
 | `/ha lowhealth` | Toggle the Low Health alert on/off |
